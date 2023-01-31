@@ -88,7 +88,7 @@ spec:
               cpu: 10m
               memory: 20Mi
         - name: azurelustre
-          image: mcr.microsoft.com/oss/kubernetes-csi/azurelustre-csi:v0.1.4
+          image: mlct01acr.azurecr.io/azurelustre-csi:v0.1.10
           imagePullPolicy: IfNotPresent
           args:
             - "-v=5"
@@ -121,29 +121,27 @@ spec:
           securityContext:
             privileged: true
           volumeMounts:
+            - mountPath: /bin
+              name: host-bin
             - mountPath: /csi
               name: socket-dir
+            - mountPath: /dev
+              name: host-dev
+            - mountPath: /etc
+              name: host-etc
+            - mountPath: /host/var/log
+              name: host-var-log
+            - mountPath: /lib
+              name: host-lib
+            - mountPath: /mnt
+              name: azurelustre-cache
+            - mountPath: /sbin
+              name: host-sbin
+            - mountPath: /usr
+              name: host-usr
             - mountPath: /var/lib/kubelet/
               mountPropagation: Bidirectional
               name: mountpoint-dir
-            - mountPath: /etc/kubernetes/
-              name: azure-cred
-            - mountPath: /mnt
-              name: azurelustre-cache
-            - mountPath: /dev
-              name: host-dev
-            - mountPath: /host/var/log
-              name: host-var-log
-            # - mountPath: /usr
-            #   name: host-usr
-            # - mountPath: /etc
-            #   name: host-etc
-            # - mountPath: /lib
-            #   name: host-lib
-            - mountPath: /sbin
-              name: host-sbin
-            - mountPath: /etc/host-os-release
-              name: host-os-release
           resources:
             limits:
               cpu: 1
@@ -164,10 +162,6 @@ spec:
             path: /var/lib/kubelet/plugins_registry/
             type: DirectoryOrCreate
           name: registration-dir
-        - hostPath:
-            path: /etc/kubernetes/
-            type: DirectoryOrCreate
-          name: azure-cred
         - hostPath:
             path: /mnt
             type: DirectoryOrCreate
@@ -197,6 +191,6 @@ spec:
             type: Directory
           name: host-sbin
         - hostPath:
-            path: /etc/os-release
-            type: File
-          name: host-os-release
+            path: /bin
+            type: Directory
+          name: host-bin

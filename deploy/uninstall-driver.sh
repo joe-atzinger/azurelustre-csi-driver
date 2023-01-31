@@ -19,9 +19,14 @@ set -euo pipefail
 repo="$(git rev-parse --show-toplevel)/deploy"
 
 echo "Uninstalling Azure Lustre CSI driver, repo: $repo ..."
+kubectl delete pod msft-laaso-lustre-app2  --ignore-not-found
 kubectl delete -f $repo/csi-azurelustre-controller.yaml --ignore-not-found
 kubectl delete -f $repo/csi-azurelustre-node.yaml --ignore-not-found
 kubectl delete -f $repo/csi-azurelustre-driver.yaml --ignore-not-found
 kubectl delete -f $repo/rbac-csi-azurelustre-controller.yaml --ignore-not-found
 kubectl delete -f $repo/rbac-csi-azurelustre-node.yaml --ignore-not-found
+kubectl delete pvc pvc-lustre --ignore-not-found
+kubectl delete sc sc.azurelustre.csi.azure.com --ignore-not-found
+kubectl delete pv $(kubectl get pv | grep pvc | awk '{print $1}') --ignore-not-found
+
 echo 'Uninstalled Azure Lustre CSI driver successfully.'

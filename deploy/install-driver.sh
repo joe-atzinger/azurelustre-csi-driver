@@ -16,31 +16,18 @@
 set -o xtrace
 set -euo pipefail
 
-ver="main"
-if [[ "$#" -gt 0 ]]; then
-  ver="$1"
-fi
+echo "Installing Azure Lustre CSI driver"
+kubectl apply -f deploy/csi-azurelustre-driver.yaml
+kubectl create -f docs/examples/storageclass_existing_lustre.yaml
+kubectl create -f docs/examples/pvc_storageclass.yaml
 
-repo="https://raw.githubusercontent.com/kubernetes-sigs/azurelustre-csi-driver/$ver/deploy"
-
-if [[ "$#" -gt 1 ]]; then
-  if [[ "$2" == *"local"* ]]; then
-    echo "use local deploy"
-    repo="$(git rev-parse --show-toplevel)/deploy"
-  fi
-fi
-
-if [ $ver != "main" ]; then
-  repo="$repo/$ver"
-fi
-
-echo "Installing Azure Lustre CSI driver, version: $ver, repo: $repo ..."
-kubectl apply -f $repo/rbac-csi-azurelustre-controller.yaml
-kubectl apply -f $repo/rbac-csi-azurelustre-node.yaml
-kubectl apply -f $repo/csi-azurelustre-driver.yaml
-kubectl apply -f $repo/csi-azurelustre-controller.yaml
-kubectl apply -f $repo/csi-azurelustre-node.yaml
+kubectl apply -f deploy/rbac-csi-azurelustre-controller.yaml
+kubectl apply -f deploy/rbac-csi-azurelustre-node.yaml
+kubectl apply -f deploy/csi-azurelustre-controller.yaml
+kubectl apply -f deploy/csi-azurelustre-node.yaml
 
 kubectl rollout status deployment csi-azurelustre-controller -nkube-system --timeout=300s
 kubectl rollout status daemonset csi-azurelustre-node -nkube-system --timeout=1800s
 echo 'Azure Lustre CSI driver installed successfully.'
+
+kubectl apply -f deploy/example/echodate/echo.yml

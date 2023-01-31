@@ -112,7 +112,7 @@ azurelustre-darwin:
 
 .PHONY: container
 container: azurelustre
-	docker build -t $(IMAGE_TAG) --output=type=docker -f ./pkg/azurelustreplugin/Dockerfile .
+	docker build -t $(IMAGE_TAG) -f ./pkg/azurelustreplugin/Dockerfile .
 	# docker build -t $(IMAGE_TAG) -f ./pkg/azurelustreplugin/Dockerfile .
 
 .PHONY: container-linux
@@ -134,7 +134,7 @@ azurelustre-container:
 
 .PHONY: ior
 ior:
-	docker build -t $(REGISTRY)/ior:latest --output=type=docker -f ./test/ior/Dockerfile .
+	docker build -t $(REGISTRY)/ior:latest -f ./test/ior/Dockerfile .
 	# docker build -t $(REGISTRY)/ior:latest -f ./test/ior/Dockerfile .
 
 .PHONY: push
